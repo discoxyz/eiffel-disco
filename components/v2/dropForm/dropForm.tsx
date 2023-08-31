@@ -28,6 +28,7 @@ type DropProps = Prisma.DropGetPayload<{}> & {
 
 export const DropForm: FC<{
   drop?: DropProps;
+  create?: boolean;
   refreshData?: () => void;
   // eslint-disable-next-line
   setDrop?: (args: {
@@ -38,7 +39,7 @@ export const DropForm: FC<{
     createdByAddress?: string;
     textColor?: string;
   }) => void;
-}> = ({ drop: _drop, setDrop = () => null, refreshData }) => {
+}> = ({ drop: _drop, setDrop = () => null, refreshData, create }) => {
   const params = useParams();
   const path = params?.path as string;
   const formRef = createRef<any>();
@@ -63,7 +64,7 @@ export const DropForm: FC<{
   }, [searchParams]);
 
   useEffect(() => {
-    if (_drop) {
+    if (_drop && !create) {
       const _fields = fields;
       Object.entries(_fields).map(([key, value]) => {
         if (key === "claims") {
@@ -92,7 +93,7 @@ export const DropForm: FC<{
         schemas.find((s) => s?.schema.$id === _drop?.schema)?.name,
       );
     }
-  }, []);
+  }, [_drop, create]);
 
   const [pathAvailable, setPathAvailable] = useState<undefined | boolean>();
   const [pathLoading, setPathLoading] = useState<boolean>(false);
@@ -114,7 +115,11 @@ export const DropForm: FC<{
       setFieldData({ ..._fieldData });
 
       if (key === "path") setPathAvailable(undefined);
-      const invalid = /[^A-Za-z0-9_-]/.test(value) || path == 'my-drops' || path == 'admin' || path == 'my-claims';
+      const invalid =
+        /[^A-Za-z0-9_-]/.test(value) ||
+        path == "my-drops" ||
+        path == "admin" ||
+        path == "my-claims";
 
       if (key === "path" && value) {
         if (value === _drop?.path) {
@@ -581,7 +586,9 @@ export const DropForm: FC<{
                           />
                         </svg>
                       ) : pathAvailable === true ? (
-                        <span className="ml-auto text-green-500">Available</span>
+                        <span className="ml-auto text-green-500">
+                          Available
+                        </span>
                       ) : (
                         pathAvailable === false && (
                           <span className="ml-auto text-red-500">
