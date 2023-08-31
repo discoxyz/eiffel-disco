@@ -28,7 +28,6 @@ type DropProps = Prisma.DropGetPayload<{}> & {
 
 export const DropForm: FC<{
   drop?: DropProps;
-  create?: boolean;
   refreshData?: () => void;
   // eslint-disable-next-line
   setDrop?: (args: {
@@ -39,7 +38,7 @@ export const DropForm: FC<{
     createdByAddress?: string;
     textColor?: string;
   }) => void;
-}> = ({ drop: _drop, setDrop = () => null, refreshData, create }) => {
+}> = ({ drop: _drop, setDrop = () => null, refreshData }) => {
   const params = useParams();
   const path = params?.path as string;
   const formRef = createRef<any>();
@@ -65,9 +64,7 @@ export const DropForm: FC<{
 
   useEffect(() => {
     // Ensure form is cleared
-    if (create && !_drop) {
-      setFieldData(fields)
-    } else if (_drop && !create) {
+    if (_drop) {
       const _fields = fields;
       Object.entries(_fields).map(([key, value]) => {
         if (key === "claims") {
@@ -96,7 +93,7 @@ export const DropForm: FC<{
         schemas.find((s) => s?.schema.$id === _drop?.schema)?.name,
       );
     }
-  }, [_drop, create]);
+  }, [_drop]);
 
   const [pathAvailable, setPathAvailable] = useState<undefined | boolean>();
   const [pathLoading, setPathLoading] = useState<boolean>(false);
@@ -150,18 +147,6 @@ export const DropForm: FC<{
           }
         }
       }
-
-      // if (key === "linkText" && value) {
-      //   console.log("linkText yooo", value);
-      //   if (!value.includes("{link}")) {
-      //     _fieldData[key].field.error = true;
-      //     _fieldData[key].field.errorMessage = "Must include {link}";
-      //   } else {
-      //     _fieldData[key].field.error = false;
-      //     _fieldData[key].field.errorMessage =
-      //       fieldData[key].field.errorMessage;
-      //   }
-      // }
     },
     [fieldData],
   );
@@ -384,6 +369,8 @@ export const DropForm: FC<{
     const result = await res.json();
 
     if (!_drop?.id) {
+      // Reset form
+      setFieldData(fields);
       va.track("DropCreated", {
         did: address as string,
         id: result.data.drop.id,

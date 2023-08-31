@@ -14,7 +14,7 @@ export default function Page() {
     <>
       <main className="mx-auto mb-auto flex w-full max-w-7xl items-start p-4">
         <div className="mr-12 w-full max-w-3xl text-xl">
-          <DropForm setDrop={setDrop} create />
+          <DropForm setDrop={setDrop} />
         </div>
         <div className="sticky top-0 flex-1 flex-col">
           <>
