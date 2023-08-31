@@ -64,7 +64,10 @@ export const DropForm: FC<{
   }, [searchParams]);
 
   useEffect(() => {
-    if (_drop && !create) {
+    // Ensure form is cleared
+    if (create && !_drop) {
+      setFieldData(fields)
+    } else if (_drop && !create) {
       const _fields = fields;
       Object.entries(_fields).map(([key, value]) => {
         if (key === "claims") {
