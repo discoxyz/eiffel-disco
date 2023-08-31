@@ -39,7 +39,7 @@ export const ClaimList: FC<{
               data={donwloadCsv}
               filename={`disco-claims-${drop.path}.csv`}
             >
-              Save List
+              Export
             </CSVLink>
           </span>
         ) : ''}
