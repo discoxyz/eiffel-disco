@@ -3,22 +3,26 @@
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
+import { infuraProvider } from "wagmi/providers/infura";
 import { FC, PropsWithChildren } from "react";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet],
-  [publicProvider()]
+  [
+    infuraProvider({
+      apiKey: process.env.NEXT_PUBLIC_INFURA_KEY as string,
+    }),
+  ],
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "Disco @ eiffel",
+  appName: "Met IRL with Disco",
   projectId: process.env.NEXT_PUBLIC_WC_KEY as string,
   chains,
 });
 
 const wagmiConfig = createConfig({
-  autoConnect: true,
+  autoConnect: false,
   connectors,
   publicClient,
   webSocketPublicClient,
@@ -27,18 +31,7 @@ const wagmiConfig = createConfig({
 export const WalletProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
-        {/* <Did3Provider
-          autoConnectDid3={false}
-          autoReconnectDid3={false}
-          autoDisconnectDid3
-        >
-          <ClaimProvider> */}
-        {/* <Nav /> */}
-        {children}
-        {/* </ClaimProvider> */}
-        {/* </Did3Provider> */}
-      </RainbowKitProvider>
+      <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
     </WagmiConfig>
   );
 };
